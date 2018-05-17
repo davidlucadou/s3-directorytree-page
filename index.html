@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>S3 File Listing</title>
+  <meta name="author" content="Luna Moona" />
+  <!-- From https://github.com/prabhatsharma/s3-directorylisting -->
+</head>
+<body>
+  <p>Key: 2389047238u289</p>
+  <script>
+    var region = 'us-east-1'; // Set this to your region
+    var bucket = 'files.monotonet.im'; // Set this to your bucket name, e.g. files.dlucadou.com
+    var host = 'files.monotonet.im';  // Set this to the domain name of your domain; will NOT work for https://s3[...].amazonaws.com/bucket.name/, it MUST be an actual valid A/AAAA/CNAME record.
+    var startPosition = host.search('s3-website')
+    var urlSuffix;
+    if (region === 'us-east-1') {
+      urlSuffix = 's3.amazonaws.com';
+    } else {
+      urlSuffix = 's3-' + region + '.amazonaws.com';
+    }
+
+    var url = 'https://' + urlSuffix + "/" + bucket + "/";
+    fetch(url).then(res => {
+      sMyString = res.text().then(text => {
+        var oParser = new DOMParser();
+        var oDOM = oParser.parseFromString(text, "text/xml");
+        oDOM.childNodes.forEach((value, index, listObj) => {
+          value.childNodes.forEach((value1, index1, listObj1) => {
+            value1.childNodes.forEach((value2, index2, listObj2) => {
+              if (value2.localName === 'Key' && value2.textContent !== 'index.html') {
+                var fileName = value2.textContent
+                var url = window.location + fileName
+                document.writeln("<a href='" + url + "'>" + fileName + "</a> <br>")
+              }
+            })
+          })
+        })
+      })
+    })
+  </script>
+</body>
+</html>
